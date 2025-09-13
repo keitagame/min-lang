@@ -21,4 +21,4 @@ jobs:
         run: make
 
       - name: Run binary
-        run: ./myprog
+        run: ./myprog sample.js
