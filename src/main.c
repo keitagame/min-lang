@@ -76,7 +76,7 @@ static void skip_ws_and_comments(Lexer *L){
             }
             if(L->pos+1<L->len && L->src[L->pos+1]=='*'){ // block comment
                 lx_next(L); lx_next(L);
-                int prev=''; int cur;
+                int prev=0; int cur;
                 while((cur=lx_next(L))){
                     if(prev=='*' && cur=='/') break;
                     prev=cur;
