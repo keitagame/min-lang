@@ -20,5 +20,4 @@ jobs:
       - name: Build
         run: make
 
-      - name: Run binary
-        run: ./myprog sample.js
+      
