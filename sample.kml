@@ -1,0 +1,8 @@
+@0ms: const path = "/home/keita/bg.png"
+@0ms: game.background.image = Imagetopath(path)
+@0ms: game.background.opacity = 0
+@100ms: game.background.opacity = 1
+@0ms: const keita = "/home/keita/keita.png"
+@0ms: game.background.image = Imagetopath(keita)
+@0ms: game.background.opacity = 0
+@130ms: game.background.opacity = 1
