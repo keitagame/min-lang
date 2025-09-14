@@ -1,9 +1,13 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
-TARGET = myprog
 
-$(TARGET): src/main.c
-	$(CC) $(CFLAGS) -o $@ $^
+all: main
+
+main: main.o lexer.o
+    $(CC) $(CFLAGS) -o main main.o lexer.o
+
+main.o: main.c lexer.h
+lexer.o: lexer.c lexer.h
 
 clean:
 	rm -f $(TARGET)
