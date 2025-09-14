@@ -6,8 +6,8 @@ all: main
 main: main.o lexer.o
 	$(CC) $(CFLAGS) -o main main.o lexer.o
 
-main.o: main.c lexer.h
-lexer.o: lexer.c lexer.h
+main.o: src/main.c src/lexer.h
+lexer.o: src/lexer.c src/lexer.h
 
 clean:
 	rm -f $(TARGET)
