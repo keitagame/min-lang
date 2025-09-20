@@ -3,7 +3,7 @@
 // - Supports: integer literals, + - * / %, parentheses,
 //             variables (assignment), print(expr); if/else, while, blocks.
 // - Very small symbol table (linked list). Single source file for simplicity.
-
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
