@@ -4,10 +4,7 @@ CFLAGS = -Wall -Wextra -O2
 all: main
 
 main: main.o lexer.o
-	$(CC) $(CFLAGS) -o main main.o lexer.o
-
-main.o: main.c lexer.h
-lexer.o: lexer.c lexer.h
+	$(CC) $(CFLAGS) -o main main.c
 
 clean:
 	rm -f $(TARGET)
