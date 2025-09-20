@@ -17,7 +17,7 @@ typedef enum {
     T_LPAREN, T_RPAREN,
     T_LBRACE, T_RBRACE,
     T_SEMI, T_ASSIGN, T_COMMA,
-    T_LT, T_GT, T_LE, T_GE, T_EQ, T_NE,
+    T_LT, T_GT, T_LE, T_GE, T_EQ, T_NE, T_FM,
     T_IF, T_ELSE, T_WHILE, T_PRINT,
     T_UNKNOWN
 } TokenType;
