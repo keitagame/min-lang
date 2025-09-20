@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -O2
 
 all: main
 
-main: main.o lexer.o
+main: main
 	$(CC) $(CFLAGS) -o main main.c
 
 clean:
