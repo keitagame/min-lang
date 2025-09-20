@@ -42,6 +42,22 @@ void error_at(int line, const char *fmt, ...) {
     fprintf(stderr, "\n");
     exit(1);
 }
+typedef struct Func {
+    char *name;
+    char **params;
+    int param_count;
+    char *body_src;
+    struct Func *next;
+} Func;
+
+Func *funcs = NULL;
+
+Func *find_func(const char *name) {
+    for (Func *f = funcs; f; f = f->next) {
+        if (strcmp(f->name, name) == 0) return f;
+    }
+    return NULL;
+}
 
 // Simple symbol table: linked list of name->value
 typedef struct Var {
@@ -202,6 +218,56 @@ int precedence(TokenType t) {
         case T_EQ: case T_NE: return 30;
         default: return 0;
     }
+}
+void parse_function() {
+    expect(T_FN);
+    if (cur_tok.type != T_IDENT) error_at(cur_tok.line, "関数名が必要");
+    char *fname = strdup(cur_tok.ident);
+    advance();
+
+    expect(T_LPAREN);
+    char **params = NULL;
+    int param_count = 0;
+    if (cur_tok.type != T_RPAREN) {
+        do {
+            if (cur_tok.type != T_IDENT) error_at(cur_tok.line, "引数名が必要");
+            params = realloc(params, sizeof(char*) * (param_count+1));
+            params[param_count++] = strdup(cur_tok.ident);
+            advance();
+        } while (accept(T_COMMA));
+    }
+    expect(T_RPAREN);
+
+    // 本体をソース文字列として保存
+    if (cur_tok.type != T_LBRACE) error_at(cur_tok.line, "関数本体が必要");
+    size_t start = pos;
+    int depth = 0;
+    size_t p = pos;
+    while (src[p]) {
+        if (src[p] == '{') depth++;
+        else if (src[p] == '}') {
+            depth--;
+            if (depth == 0) { p++; break; }
+        }
+        p++;
+    }
+    size_t len = p - start;
+    char *body_src = malloc(len+1);
+    memcpy(body_src, src+start, len);
+    body_src[len] = '\0';
+
+    // 関数登録
+    Func *f = malloc(sizeof(Func));
+    f->name = fname;
+    f->params = params;
+    f->param_count = param_count;
+    f->body_src = body_src;
+    f->next = funcs;
+    funcs = f;
+
+    // 本体をスキップ
+    pos = p;
+    cur_tok = next_token();
 }
 
 long parse_primary() {
