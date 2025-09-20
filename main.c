@@ -277,12 +277,66 @@ long parse_primary() {
         return v;
     }
     if (cur_tok.type == T_IDENT) {
-        // Could be a variable or function call in future; here it's a variable.
-        char *name = strdup(cur_tok.ident);
-        int line = cur_tok.line;
-        advance();
-        return get_var(name, line);
+    char *name = strdup(cur_tok.ident);
+    int line = cur_tok.line;
+    advance();
+
+    if (accept(T_LPAREN)) {
+        // 関数呼び出し
+        Func *f = find_func(name);
+        if (!f) error_at(line, "未定義の関数 '%s'", name);
+
+        long *args = malloc(sizeof(long) * f->param_count);
+        int i = 0;
+        if (cur_tok.type != T_RPAREN) {
+            do {
+                if (i >= f->param_count) error_at(line, "引数が多すぎます");
+                args[i++] = parse_expression();
+            } while (accept(T_COMMA));
+        }
+        expect(T_RPAREN);
+        if (i != f->param_count) error_at(line, "引数の数が一致しません");
+
+        // 実行: body_src を interpret するが、引数をローカル変数にセット
+        const char *old_src = src;
+        size_t old_pos = pos;
+        int old_line = line_no;
+        Token old_tok = cur_tok;
+        Var *old_vars = vars; // 環境を保存
+
+        // 新しい環境
+        vars = NULL;
+        for (int j=0; j<f->param_count; j++) {
+            set_var(f->params[j], args[j]);
+        }
+
+        src = f->body_src;
+        pos = 0;
+        line_no = 1;
+        cur_tok = next_token();
+        long ret = 0;
+        while (cur_tok.type != T_EOF && cur_tok.type != T_RBRACE) {
+            ret = parse_statement();
+        }
+
+        // 環境復元
+        vars = old_vars;
+        src = old_src;
+        pos = old_pos;
+        line_no = old_line;
+        cur_tok = old_tok;
+
+        free(args);
+        free(name);
+        return ret;
+    } else {
+        // 変数参照
+        long v = get_var(name, line);
+        free(name);
+        return v;
     }
+}
+
     if (accept(T_LPAREN)) {
         long v = parse_expression();
         expect(T_RPAREN);
